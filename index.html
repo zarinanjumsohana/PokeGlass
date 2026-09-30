@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PokéGlass · Pokémon Card Explorer</title>
+  <meta name="description" content="Search any Pokémon and watch its 3D glass card fly in, powered by PokéAPI.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-scene="sky">
+  <a class="skip" href="#search-input">Skip to search</a>
+
+  <!-- ============ Parallax backdrop (two switchable scenes) ============ -->
+  <div class="scene" aria-hidden="true">
+
+    <!-- Scene 1: sunny mountain lake -->
+    <div class="world world--sky">
+      <div class="layer" style="--d:3"><div class="sky-bg"></div></div>
+      <div class="layer rays" style="--d:6"></div>
+      <div class="layer" style="--d:10" data-fill="clouds-far"></div>
+      <div class="layer" style="--d:14"><div class="mountains mountains--far"></div></div>
+      <div class="layer" style="--d:22"><div class="mountains mountains--near"></div></div>
+      <div class="layer" style="--d:30" data-fill="clouds-near"></div>
+      <div class="layer" style="--d:36"><div class="lake"></div></div>
+      <div class="layer" style="--d:46" data-fill="trees"></div>
+      <div class="layer" style="--d:66" data-fill="flowers"><div class="cliff"></div><div class="bush"></div></div>
+    </div>
+
+    <!-- Scene 2: ringed planet and dawn horizon -->
+    <div class="world world--space">
+      <div class="layer" style="--d:3"><div class="space-bg"></div></div>
+      <div class="layer" style="--d:8" data-fill="stars" data-count="70"></div>
+      <div class="layer" style="--d:16" data-fill="stars" data-count="36"></div>
+      <div class="layer" style="--d:12"><div class="giant"></div></div>
+      <div class="layer" style="--d:26">
+        <div class="ringed">
+          <div class="globe"></div>
+          <div class="ring ring--a"></div>
+          <div class="ring ring--b"></div>
+          <div class="ring ring--c"></div>
+        </div>
+        <div class="moon"></div>
+      </div>
+      <div class="layer" style="--d:32"><div class="dawn"></div><div class="peaks"></div></div>
+      <div class="layer" style="--d:46"><div class="pyramid"></div></div>
+      <div class="layer" style="--d:70">
+        <div class="path"></div>
+        <div class="figure figure--a"></div>
+        <div class="figure figure--b"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Top bar ============ -->
+  <header class="topbar glass">
+    <a class="brand" href="#top"><span class="brand__ball" aria-hidden="true"></span>PokéGlass</a>
+    <div class="scene-switch" role="group" aria-label="Backdrop scene">
+      <button type="button" class="seg" data-scene-btn="sky" aria-pressed="true">Sky</button>
+      <button type="button" class="seg" data-scene-btn="space" aria-pressed="false">Space</button>
+    </div>
+    <div class="topbar__actions">
+      <button type="button" class="btn btn--small" id="list-btn" aria-haspopup="dialog">List / Choose</button>
+      <button type="button" class="btn btn--small" data-random>Random</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ============ Hero ============ -->
+    <section class="hero container">
+      <div class="hero__copy">
+        <h1>Search any Pokémon.<br>Watch it fly in.</h1>
+        <p class="lede">Type a name or Pokédex number. The card pulls live stats, abilities and type matchups from PokéAPI, then lets you spin the Pokémon and hit it with its own type effects.</p>
+
+        <form id="search-form" class="search glass" novalidate>
+          <label for="search-input">Pokémon name or number</label>
+          <div class="search__row">
+            <input id="search-input" name="q" type="text" inputmode="text" autocomplete="off"
+                   autocapitalize="none" spellcheck="false" placeholder="pikachu, 6, mr-mime"
+                   aria-describedby="status" required>
+            <button class="btn" type="submit">Search</button>
+          </div>
+          <div class="quick" role="group" aria-label="Quick search">
+            <span class="quick__label">Quick search</span>
+            <button type="button" class="chip" data-q="pikachu">Pikachu</button>
+            <button type="button" class="chip" data-q="charizard">Charizard</button>
+            <button type="button" class="chip" data-q="bulbasaur">Bulbasaur</button>
+            <button type="button" class="chip" data-q="gengar">Gengar</button>
+            <button type="button" class="chip" data-q="lapras">Lapras</button>
+            <button type="button" class="chip" data-random>Random</button>
+          </div>
+        </form>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </div>
+
+      <!-- Floating 3D flock: click one to search it -->
+      <div class="flock" role="group" aria-label="Featured Pokémon. Select one to search it.">
+        <div class="flock__rig">
+          <button type="button" class="mon" data-q="charizard" aria-label="Search Charizard"
+                  style="--l:34%;--t:2%;--w:64%;--z:-70;--bob:5.2s">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt="" draggable="false">
+            <span class="mon__tag">Charizard</span>
+          </button>
+          <button type="button" class="mon" data-q="mewtwo" aria-label="Search Mewtwo"
+                  style="--l:-2%;--t:34%;--w:38%;--z:50;--bob:4.4s">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" alt="" draggable="false">
+            <span class="mon__tag">Mewtwo</span>
+          </button>
+          <button type="button" class="mon" data-q="pikachu" aria-label="Search Pikachu"
+                  style="--l:38%;--t:40%;--w:48%;--z:140;--bob:3.6s">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="" draggable="false">
+            <span class="mon__tag">Pikachu</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Results ============ -->
+    <section class="results container" id="results" aria-label="Search result">
+      <div id="notice" class="notice glass" hidden>
+        <span class="ball" id="notice-ball" aria-hidden="true"></span>
+        <h2 id="notice-title"></h2>
+        <p id="notice-body"></p>
+        <div class="notice__actions" id="notice-actions"></div>
+      </div>
+
+      <article id="result" class="result" hidden aria-busy="false">
+        <div class="loader" id="loader" hidden>
+          <span class="ball" aria-hidden="true"></span>
+          <p id="loader-text">Loading…</p>
+        </div>
+
+        <!-- Left: interactive 3D stage -->
+        <div class="pane pane--stage glass" id="stage" tabindex="0"
+             role="group" aria-label="Interactive 3D view. Drag to spin. Click or press Enter to attack.">
+          <div class="stage__bg" aria-hidden="true">
+            <span class="stage__word" id="stage-word"></span>
+            <span class="grid-floor"></span>
+          </div>
+          <div class="scene3d">
+            <div class="ground" id="ground"></div>
+            <div class="rig" id="rig">
+              <div class="float">
+                <div class="layers" id="layers"></div>
+              </div>
+            </div>
+          </div>
+          <div class="fx" id="fx" aria-hidden="true"></div>
+          <p class="stage__hint">Drag to spin. Click to attack.</p>
+          <div class="stage__controls">
+            <button type="button" class="round" id="prev-btn" aria-label="Previous Pokémon">‹</button>
+            <button type="button" class="btn btn--small" id="shiny-btn" aria-pressed="false">Shiny</button>
+            <button type="button" class="btn btn--small" id="cry-btn">Play cry</button>
+            <button type="button" class="round" id="next-btn" aria-label="Next Pokémon">›</button>
+          </div>
+        </div>
+
+        <!-- Right: data panel -->
+        <div class="pane pane--info glass">
+          <header class="info__head">
+            <p class="dexno" id="dexno"></p>
+            <h2 id="pk-name" tabindex="-1"></h2>
+            <p class="genus" id="genus"></p>
+            <ul class="types" id="types" aria-label="Types"></ul>
+          </header>
+
+          <p class="flavor" id="flavor"></p>
+
+          <dl class="facts">
+            <div><dt>Height</dt><dd id="f-height"></dd></div>
+            <div><dt>Weight</dt><dd id="f-weight"></dd></div>
+            <div><dt>Base experience</dt><dd id="f-exp"></dd></div>
+          </dl>
+
+          <section class="power" aria-label="Power rating">
+            <div class="power__ring" id="power-ring" style="--pct:0"><b id="power-total">0</b></div>
+            <div>
+              <h3>Power rating</h3>
+              <p id="power-tier"></p>
+            </div>
+          </section>
+
+          <section>
+            <h3>Abilities</h3>
+            <ul class="chips" id="abilities"></ul>
+            <p class="detail" id="ability-detail" aria-live="polite" hidden></p>
+          </section>
+
+          <section>
+            <h3>Base stats</h3>
+            <ul class="stats" id="stats"></ul>
+          </section>
+
+          <section>
+            <h3>Type matchups</h3>
+            <div id="matchups"></div>
+          </section>
+
+          <section>
+            <h3>Signature moves</h3>
+            <ul class="chips chips--soft" id="moves"></ul>
+          </section>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>Data from <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a>. Pokémon and their artwork belong to Nintendo, Game Freak and The Pokémon Company. Fan-made homework project.</p>
+  </footer>
+
+  <!-- ============ List / Choose: every Pokémon in the API, A to Z ============ -->
+  <dialog id="list-dialog" class="list glass" aria-labelledby="list-title">
+    <header class="list__head">
+      <div>
+        <h2 id="list-title">Choose a Pokémon</h2>
+        <p id="list-count" class="muted" aria-live="polite">Loading…</p>
+      </div>
+      <button type="button" class="round" id="list-close" aria-label="Close list">×</button>
+    </header>
+    <div class="list__tools">
+      <label class="sr-only" for="list-filter">Filter by name</label>
+      <input id="list-filter" type="text" placeholder="Filter by name" autocomplete="off" spellcheck="false">
+      <div class="letters" id="letters" role="group" aria-label="Filter by first letter"></div>
+    </div>
+    <div class="list__body" id="list-body">
+      <ul class="pgrid" id="list-grid"></ul>
+      <div id="list-sentinel" aria-hidden="true"></div>
+      <div class="list__msg" id="list-msg" role="status"></div>
+    </div>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>

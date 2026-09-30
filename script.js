@@ -1,8 +1,3 @@
-/* =========================================================
-   PokéGlass — Pokémon Card Explorer
-   Plain JavaScript only. No frameworks, no WebGL, no keys.
-   Endpoint: GET https://pokeapi.co/api/v2/pokemon/{name}
-   ========================================================= */
 (() => {
   'use strict';
 
@@ -24,8 +19,6 @@
     dark: '#7a6a5e', steel: '#9fb4c4', fairy: '#ff9fdc'
   };
 
-  // [motion, shape] for each type's impact effect.
-  // rise = floats up, fall = drops down, pop = bursts around the Pokémon.
   const TYPE_FX = {
     fire: ['rise', 'dot'], water: ['rise', 'ring'], electric: ['pop', 'bolt'], grass: ['fall', 'leaf'],
     ice: ['fall', 'dot'], fighting: ['pop', 'star'], poison: ['rise', 'ring'], ground: ['fall', 'shard'],
@@ -104,12 +97,10 @@
     return json;
   }
 
-  // Turn a typed value into a valid PokéAPI path segment ("Mr. Mime" -> "mr-mime").
   function normalizeQuery(raw) {
     return String(raw).trim().toLowerCase().replace(/^#/, '').replace(/[.'’]/g, '').replace(/\s+/g, '-');
   }
 
-  // Validate and reshape the nested API response into a flat model the UI can trust.
   function toModel(data) {
     const stats = STAT_ORDER.map((key) => {
       const found = (data.stats || []).find((s) => s.stat.name === key);
@@ -139,7 +130,7 @@
   async function search(raw, { scroll = true } = {}) {
     const query = normalizeQuery(raw);
 
-    // Empty / invalid input: tell the user how to fix it, no request sent.
+    
     if (!query) {
       showError('Type a name first', 'Enter a Pokémon name like pikachu, or a number from 1 to 1025.');
       setStatus('Enter a Pokémon name or number.');
@@ -156,7 +147,7 @@
 
     try {
       const data = await getJSON(`${API_BASE}/pokemon/${encodeURIComponent(query)}`);
-      if (token !== state.token) return;          // a newer search replaced this one
+      if (token !== state.token) return;         
       const p = toModel(data);
       state.pokemon = p;
       state.shiny = false;
@@ -503,7 +494,7 @@
     if (!tilt.dragging) return;
     tilt.dragging = false;
     els.stage.classList.remove('is-dragging');
-    if (tilt.moved < 6) attack();          // a click, not a drag
+    if (tilt.moved < 6) attack();          
   };
   els.stage.addEventListener('pointerup', endDrag);
   els.stage.addEventListener('pointercancel', () => { tilt.dragging = false; els.stage.classList.remove('is-dragging'); });
@@ -540,7 +531,7 @@
       tilt.rx += (tilt.tx - tilt.rx) * 0.1;
       tilt.ry += (tilt.ty - tilt.ry) * 0.1;
       if (!tilt.dragging) {
-        const target = Math.round(tilt.spin / 360) * 360;    // settle on the nearest full turn
+        const target = Math.round(tilt.spin / 360) * 360;    
         tilt.spin += (target - tilt.spin) * 0.07;
       }
       els.rig.style.transform = `rotateX(${tilt.rx.toFixed(2)}deg) rotateY(${(tilt.ry + tilt.spin).toFixed(2)}deg)`;
@@ -611,7 +602,6 @@
   const artUrl = (id) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
   const spriteUrl = (id) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 
-  // One request for the full name index + one per type (18) so every card can show its types.
   async function loadList() {
     if (list.all || list.loading) return;
     list.loading = true;
@@ -624,7 +614,7 @@
       ]);
       if (index.status !== 'fulfilled') throw index.reason;
 
-      const typeMap = new Map();          // pokemon name -> [type, type]
+      const typeMap = new Map();         
       typeResults.forEach((r) => {
         if (r.status !== 'fulfilled') return;
         r.value.pokemon.forEach(({ pokemon, slot }) => {
@@ -640,7 +630,7 @@
           return { name: r.name, id, types: (typeMap.get(r.name) || []).filter(Boolean) };
         })
         .filter((p) => p.id)
-        .sort((a, b) => a.name.localeCompare(b.name));   // A to Z
+        .sort((a, b) => a.name.localeCompare(b.name));   
 
       buildLetters();
       applyListFilter();
@@ -690,7 +680,6 @@
     list.letters.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.letter === list.letter)));
   }
 
-  // Render cards in batches so 1,300+ Pokémon stay fast.
   function renderBatch() {
     const slice = list.filtered.slice(list.shown, list.shown + BATCH);
     if (!slice.length) return;
@@ -698,7 +687,6 @@
     const frag = document.createDocumentFragment();
     slice.forEach((p) => frag.append(makeCard(p)));
     list.grid.append(frag);
-    // re-arm the observer so it fires again if the sentinel is still on screen
     more.unobserve(list.sentinel);
     if (list.shown < list.filtered.length) more.observe(list.sentinel);
   }
@@ -713,8 +701,8 @@
     let tries = 0;
     img.addEventListener('error', () => {
       tries++;
-      if (tries === 1) img.src = spriteUrl(p.id);            // fallback: small sprite
-      else img.replaceWith(h('span', { text: '?', 'aria-hidden': 'true' }));   // fallback: placeholder
+      if (tries === 1) img.src = spriteUrl(p.id);            
+      else img.replaceWith(h('span', { text: '?', 'aria-hidden': 'true' }));   
     });
     const btn = h('button', { class: 'pcard', type: 'button', style: `--c1:${c1};--c2:${c2}`, 'aria-label': `${pretty(p.name)}, number ${p.id}` },
       h('div', { class: 'pcard__art' }, img),
@@ -737,12 +725,11 @@
   });
   list.btn.addEventListener('click', () => { list.dialog.showModal(); loadList(); });
   list.close.addEventListener('click', () => list.dialog.close());
-  list.dialog.addEventListener('click', (e) => { if (e.target === list.dialog) list.dialog.close(); });   // click on backdrop
+  list.dialog.addEventListener('click', (e) => { if (e.target === list.dialog) list.dialog.close(); });   
 
   /* ---------- Events ---------- */
   els.form.addEventListener('submit', (e) => { e.preventDefault(); search(els.input.value); });
 
-  // Delegated: any element with data-q searches that name; data-random picks a random ID.
   document.addEventListener('click', (e) => {
     const q = e.target.closest('[data-q]');
     if (q) { search(q.dataset.q); return; }

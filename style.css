@@ -1,16 +1,11 @@
-/* =========================================================
-   PokéGlass — glassmorphic Pokémon card explorer
-   Pure CSS 3D (perspective + preserve-3d). No WebGL.
-   ========================================================= */
 
-/* Registered so the type tint can animate smoothly between Pokémon */
 @property --tint  { syntax: "<color>"; inherits: true; initial-value: #ffd43b; }
 @property --tint2 { syntax: "<color>"; inherits: true; initial-value: #ffe98a; }
 
 :root {
   --tint: #ffd43b;
   --tint2: #ffe98a;
-  --on: #08111f;                 /* readable text colour on tint */
+  --on: #08111f;                 
   --ink: #f5f9ff;
   --ink-soft: rgba(245, 249, 255, .74);
   --line: rgba(255, 255, 255, .28);
@@ -29,7 +24,6 @@ body {
   overflow-x: clip;
   min-height: 100vh;
 }
-/* Tinted wash + legibility shade over the scene */
 body::before {
   content: "";
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
@@ -53,9 +47,7 @@ button, input { font: inherit; color: inherit; }
 
 :focus-visible { outline: 3px solid #fff; outline-offset: 3px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--tint) 70%, transparent); }
 
-/* ---------------------------------------------------------
-   Glass
-   --------------------------------------------------------- */
+
 .glass {
   position: relative;
   background:
@@ -70,7 +62,7 @@ button, input { font: inherit; color: inherit; }
     inset 0 1px 0 rgba(255, 255, 255, .38),
     inset 0 -1px 0 rgba(255, 255, 255, .06);
 }
-.glass::before {            /* specular sheen */
+.glass::before {            
   content: "";
   position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
   background: linear-gradient(115deg, rgba(255, 255, 255, .20) 0%, rgba(255, 255, 255, 0) 32%);
@@ -79,9 +71,7 @@ button, input { font: inherit; color: inherit; }
   .glass { background: rgba(14, 24, 50, .86); }
 }
 
-/* ---------------------------------------------------------
-   Buttons, chips, inputs
-   --------------------------------------------------------- */
+
 .btn {
   border: 0; cursor: pointer; font-weight: 700;
   padding: 13px 22px; border-radius: 16px;
@@ -245,7 +235,6 @@ h1 {
   mask-image: linear-gradient(to top, #000 25%, transparent);
 }
 
-/* The 3D stack: stage(perspective) > rig(tilt) > float(hover) > layers(extruded copies) */
 .scene3d { position: absolute; inset: 0 0 74px; display: grid; place-items: center; perspective: 900px; }
 .rig { transform-style: preserve-3d; will-change: transform; }
 .float { transform-style: preserve-3d; animation: hover 4.4s ease-in-out infinite; }

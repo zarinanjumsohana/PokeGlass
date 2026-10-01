@@ -1,7 +1,3 @@
-Name: Zarin Anjum Sohana
-Id: 0812410105101064
-CSE-19 BAUET
-
 ## Files
 
 - index.html – structure
